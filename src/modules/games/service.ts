@@ -1,7 +1,7 @@
 import { Model } from 'mongoose';
 import { Answer, GameInterface } from './schema';
 import { UserInterface } from '../users/schema';
-import { endOfDay, startOfDay } from 'date-fns';
+import { endOfDay, endOfMonth, startOfDay, startOfMonth } from 'date-fns';
 
 export class GameService {
   constructor(
@@ -11,8 +11,11 @@ export class GameService {
 
   private getTodaysTimeRange() {
     return {
-      start: startOfDay(new Date()).getTime(),
-      end: endOfDay(new Date()).getTime()
+      // TODO: wyłącznie na czas developmentu - usunąć później
+      // start: startOfDay(new Date()).getTime(),
+      // end: endOfDay(new Date()).getTime()
+      start: startOfMonth(new Date()).getTime(),
+      end: endOfMonth(new Date()).getTime()
     };
   }
 
@@ -105,7 +108,7 @@ export class GameService {
       (game.playerOneId === playerId && game.playerOneAnswers.length > 0) ||
       (game.playerTwoId === playerId && game.playerTwoAnswers.length > 0)
     ) {
-      throw new Error('Gracz już udzielił odpowiedzi. Nie jest możliwa modyfikacja odpowiedzi.');
+      throw new Error('Gracz już udzielił odpowiedzi. Nie jest możliwa modyfikacja.');
     }
 
     await this.gameModel.updateOne({ _id: game._id }, getUpdateDto());

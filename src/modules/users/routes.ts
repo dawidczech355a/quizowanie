@@ -42,17 +42,13 @@ router.get('/', async (req, res) => {
   res.json({ users });
 });
 
-router.get('/xyz', async (req, res) => {
-  console.log('???');
-
+router.get('/classification', async (req, res) => {
   try {
-    const x = await req.dataSource.user.getClassification();
+    const result = await req.dataSource.user.getClassification();
 
-    res.json(x);
+    res.json(result);
   } catch (error) {
-    console.log('error ', error);
-
-    res.json({ message: 'Błąd' });
+    res.json({ message: 'Nie byliśmy w stanie pobrać klasyfikacji użytkowników :(' });
   }
 });
 

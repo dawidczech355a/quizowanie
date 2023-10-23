@@ -137,8 +137,6 @@ export class UserService {
         return startOfDayTime > game.date || playerAndOponent.playerAnswers.length > 0;
       });
 
-      const playedGamesNumber = playedGames.length;
-
       const smallPoints = playedGames.reduce((prev, curr) => {
         const playerPoints = getPlayerAndOponent(player._id.toString(), curr).playerAnswers.reduce(
           (prev2, curr2) => {
@@ -315,31 +313,38 @@ export class UserService {
       }, 0);
 
       return {
-        playerId: player._id,
-        playerName: player.login,
-        playedGamesNumber,
-        smallPoints,
-        bigPoints,
-        won,
-        draw,
-        lose
+        id: player._id,
+        name: player.login,
+        games: {
+          won,
+          draw,
+          lose
+        },
+        points: bigPoints,
+        subPoints: smallPoints
       };
     });
 
-    return countedClassification.sort((a, b) => {
-      if (a.bigPoints > b.bigPoints) {
-        return -1;
-      } else if (a.bigPoints < b.bigPoints) {
-        return 1;
-      } else {
-        if (a.smallPoints > b.smallPoints) {
+    return countedClassification
+      .sort((a, b) => {
+        if (a.points > b.points) {
           return -1;
-        } else if (a.smallPoints < b.smallPoints) {
+        } else if (a.points < b.points) {
           return 1;
         } else {
-          return 0;
+          if (a.subPoints > b.subPoints) {
+            return -1;
+          } else if (a.subPoints < b.subPoints) {
+            return 1;
+          } else {
+            return 0;
+          }
         }
-      }
-    });
+      })
+      .map((item, index) => ({
+        ...item,
+        // TODO: pozycja musi być odpowiednio wyliczana, nie na podstawie indexu...
+        position: index + 1
+      }));
   }
 }
