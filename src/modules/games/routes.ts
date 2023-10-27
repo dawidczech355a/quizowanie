@@ -1,35 +1,28 @@
 import { Router } from 'express';
+import { isAuthenticated } from '../../utils';
 
 const router = Router();
 
-router.get('/today', async (req, res) => {
+// JEŻELI PYTANIA BYŁY POBRANE RAZ DLA DANEGO UŻYTKOWNIKA TO NIE POBIERAMY ICH WIĘCEJ
+// ODPOWIEDZI WYSYŁAMY POJEDYNCZO
+
+router.get('/today', isAuthenticated, async (req, res) => {
   const games = await req.dataSource.games.getTodaysGames();
 
   res.json(games);
 });
 
-router.get('/:playerId', async (req, res) => {
-  const playerId = req.params.playerId;
-
-  if (!playerId) {
-    // TODO: obsłużyć błąd
-  }
-
-  const game = await req.dataSource.games.getTodaysGameByPlayerId(playerId);
+router.get('/current', isAuthenticated, async (req, res) => {
+  const game = await req.dataSource.games.getTodaysGameByPlayerId(req.userId);
   const questions = await req.dataSource.question.getAndUpdateQuestions(game.id);
 
   res.json({ questions });
 });
 
-router.post('/:playerId', async (req, res) => {
-  const playerId = req.params.playerId;
+router.post('/current', isAuthenticated, async (req, res) => {
   const answers = req.body.answers;
 
-  if (!playerId) {
-    // TODO: obsłużyć błąd
-  }
-
-  await req.dataSource.games.updateTodaysGameByPlayerId(playerId, answers);
+  await req.dataSource.games.updateTodaysGameByPlayerId(req.userId, answers);
 
   res.json(true);
 });

@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { isAuthenticated } from '../../utils';
 
 const router = Router();
 
@@ -30,7 +31,7 @@ router.post('/auth', async (req, res) => {
   }
 });
 
-router.get('/', async (req, res) => {
+router.get('/', isAuthenticated, async (req, res) => {
   const users = await req.dataSource.user.find();
 
   if (!users || !users.length) {
@@ -40,7 +41,7 @@ router.get('/', async (req, res) => {
   res.json({ users });
 });
 
-router.get('/classification', async (req, res) => {
+router.get('/classification', isAuthenticated, async (req, res) => {
   try {
     const result = await req.dataSource.user.getClassification();
 
@@ -50,12 +51,11 @@ router.get('/classification', async (req, res) => {
   }
 });
 
-router.get('/:id', async (req, res) => {
-  const id = req.params.id;
-  const user = await req.dataSource.user.findById(id);
+router.get('/me', isAuthenticated, async (req, res) => {
+  const user = await req.dataSource.user.findById(req.userId);
 
   if (!user) {
-    // throw new Error('Nie znaleziono żadnego użytkownika.');
+    // WYSTĄPIŁ PROBLEM Z POBRANIEM DANYCH
   }
 
   res.json({ user });
