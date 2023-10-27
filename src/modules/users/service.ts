@@ -130,14 +130,17 @@ export class UserService {
           getPlayerAndOponent(player._id.toString(), game)?.playerId === player._id.toString()
       );
 
-      const playedGames = playerGames.filter((game) => {
+      const finishedGames = playerGames.filter((game) => {
         const startOfDayTime = startOfDay(new Date()).getTime();
         const playerAndOponent = getPlayerAndOponent(player._id.toString(), game);
 
-        return startOfDayTime > game.date || playerAndOponent.playerAnswers.length > 0;
+        return (
+          startOfDayTime > game.date ||
+          (playerAndOponent.playerAnswers.length > 0 && playerAndOponent.oponentAnswers.length > 0)
+        );
       });
 
-      const smallPoints = playedGames.reduce((prev, curr) => {
+      const smallPoints = finishedGames.reduce((prev, curr) => {
         const playerPoints = getPlayerAndOponent(player._id.toString(), curr).playerAnswers.reduce(
           (prev2, curr2) => {
             const question = questions.find(
@@ -156,7 +159,7 @@ export class UserService {
         return prev + playerPoints;
       }, 0);
 
-      const bigPoints = playedGames.reduce((prev, curr) => {
+      const bigPoints = finishedGames.reduce((prev, curr) => {
         const playerPoints = getPlayerAndOponent(player._id.toString(), curr).playerAnswers.reduce(
           (prev2, curr2) => {
             const question = questions.find(
@@ -198,7 +201,7 @@ export class UserService {
         return prev;
       }, 0);
 
-      const won = playedGames.reduce((prev, curr) => {
+      const won = finishedGames.reduce((prev, curr) => {
         const playerPoints = getPlayerAndOponent(player._id.toString(), curr).playerAnswers.reduce(
           (prev2, curr2) => {
             const question = questions.find(
@@ -236,7 +239,7 @@ export class UserService {
         return prev;
       }, 0);
 
-      const draw = playedGames.reduce((prev, curr) => {
+      const draw = finishedGames.reduce((prev, curr) => {
         const playerPoints = getPlayerAndOponent(player._id.toString(), curr).playerAnswers.reduce(
           (prev2, curr2) => {
             const question = questions.find(
@@ -274,7 +277,7 @@ export class UserService {
         return prev;
       }, 0);
 
-      const lose = playedGames.reduce((prev, curr) => {
+      const lose = finishedGames.reduce((prev, curr) => {
         const playerPoints = getPlayerAndOponent(player._id.toString(), curr).playerAnswers.reduce(
           (prev2, curr2) => {
             const question = questions.find(

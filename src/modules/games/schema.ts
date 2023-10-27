@@ -13,6 +13,8 @@ export interface GameInterface {
   date: number;
   playerOneAnswers: Answer[];
   playerTwoAnswers: Answer[];
+  playerOneFetched?: boolean;
+  playerTwoFetched?: boolean;
 }
 
 export default new mongoose.Schema<GameInterface>({
@@ -33,5 +35,11 @@ export default new mongoose.Schema<GameInterface>({
   },
   playerTwoAnswers: {
     type: Array()
+  },
+  playerOneFetched: {
+    type: Boolean
+  },
+  playerTwoFetched: {
+    type: Boolean
   }
 });

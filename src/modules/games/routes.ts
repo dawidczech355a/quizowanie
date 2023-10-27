@@ -3,8 +3,7 @@ import { isAuthenticated } from '../../utils';
 
 const router = Router();
 
-// JEŻELI PYTANIA BYŁY POBRANE RAZ DLA DANEGO UŻYTKOWNIKA TO NIE POBIERAMY ICH WIĘCEJ
-// ODPOWIEDZI WYSYŁAMY POJEDYNCZO
+// GRAMY DO 20:00
 
 router.get('/today', isAuthenticated, async (req, res) => {
   const games = await req.dataSource.games.getTodaysGames();
@@ -14,15 +13,28 @@ router.get('/today', isAuthenticated, async (req, res) => {
 
 router.get('/current', isAuthenticated, async (req, res) => {
   const game = await req.dataSource.games.getTodaysGameByPlayerId(req.userId);
+
+  if (
+    (game.playerOneId === req.userId && game.playerOneFetched) ||
+    (game.playerTwoId === req.userId && game.playerTwoFetched)
+  ) {
+    res.statusCode = 403;
+    res.json({
+      message: 'Już wcześniej pobrałeś pytania dla tej rozgrywki. Ponowna gra nie jest możliwa.'
+    });
+    return;
+  }
+
+  await req.dataSource.games.markGameAsFetched(req.userId, game);
   const questions = await req.dataSource.question.getAndUpdateQuestions(game.id);
 
   res.json({ questions });
 });
 
 router.post('/current', isAuthenticated, async (req, res) => {
-  const answers = req.body.answers;
+  const answer = req.body.answer;
 
-  await req.dataSource.games.updateTodaysGameByPlayerId(req.userId, answers);
+  await req.dataSource.games.updateTodaysGameByPlayerId(req.userId, answer);
 
   res.json(true);
 });

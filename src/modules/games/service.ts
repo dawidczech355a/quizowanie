@@ -85,31 +85,58 @@ export class GameService {
     return result;
   }
 
-  async updateTodaysGameByPlayerId(playerId: string, answers: Answer[]) {
+  async updateTodaysGameByPlayerId(playerId: string, answer: Answer) {
     const game = await this.getTodaysGameByPlayerId(playerId);
 
     const getUpdateDto = () => {
       if (game.playerOneId === playerId) {
         return {
-          playerOneAnswers: answers
+          playerOneAnswers: [...game.playerOneAnswers, answer]
         };
       }
 
       if (game.playerTwoId === playerId) {
         return {
-          playerTwoAnswers: answers
+          playerTwoAnswers: [...game.playerTwoAnswers, answer]
         };
       }
 
       throw new Error('Nieprawidłowy identyfikator użytkownika gry!');
     };
 
+    // TODO: DO REFAKTORU - MOŻE UŻYCIE POLIMORFIZMU ZAMIAST IF'ow?
     if (
-      (game.playerOneId === playerId && game.playerOneAnswers.length > 0) ||
-      (game.playerTwoId === playerId && game.playerTwoAnswers.length > 0)
+      (game.playerOneId === playerId &&
+        game.playerOneAnswers.some(
+          (alreadyAnswer) => alreadyAnswer.questionId === answer.questionId
+        )) ||
+      (game.playerTwoId === playerId &&
+        game.playerTwoAnswers.some(
+          (alreadyAnswer) => alreadyAnswer.questionId === answer.questionId
+        ))
     ) {
       throw new Error('Gracz już udzielił odpowiedzi. Nie jest możliwa modyfikacja.');
     }
+
+    await this.gameModel.updateOne({ _id: game._id }, getUpdateDto());
+  }
+
+  async markGameAsFetched(playerId: string, game: GameInterface) {
+    const getUpdateDto = () => {
+      if (game.playerOneId === playerId) {
+        return {
+          playerOneFetched: true
+        };
+      }
+
+      if (game.playerTwoId === playerId) {
+        return {
+          playerTwoFetched: true
+        };
+      }
+
+      throw new Error('Nieprawidłowy identyfikator użytkownika gry!');
+    };
 
     await this.gameModel.updateOne({ _id: game._id }, getUpdateDto());
   }

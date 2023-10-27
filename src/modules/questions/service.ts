@@ -21,7 +21,7 @@ export class QuestionsService {
     return questions;
   }
 
-  private async getThreeQuestions(gameId: string) {
+  private async getQuestions(gameId: string) {
     const allQuestions = await this.questionModel
       .find({
         $or: [{ takenBy: gameId }, { takenBy: { $exists: false } }]
@@ -32,6 +32,7 @@ export class QuestionsService {
 
     const result = this.shuffleQuestions(questions);
 
+    // TODO: tutaj nie 3, a 5!!! - poki co 3 bo mi szybciej
     return result.slice(0, 3).map((question) => ({
       id: question._id,
       question: question.question,
@@ -48,7 +49,7 @@ export class QuestionsService {
   }
 
   async getAndUpdateQuestions(gameId: string) {
-    const result = await this.getThreeQuestions(gameId);
+    const result = await this.getQuestions(gameId);
     await this.markQuestionsAsTaken(
       result.map((item) => item.id),
       gameId
