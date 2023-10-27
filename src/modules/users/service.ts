@@ -325,26 +325,38 @@ export class UserService {
       };
     });
 
-    return countedClassification
-      .sort((a, b) => {
-        if (a.points > b.points) {
+    const sortedClassification = countedClassification.sort((a, b) => {
+      if (a.points > b.points) {
+        return -1;
+      } else if (a.points < b.points) {
+        return 1;
+      } else {
+        if (a.subPoints > b.subPoints) {
           return -1;
-        } else if (a.points < b.points) {
+        } else if (a.subPoints < b.subPoints) {
           return 1;
         } else {
-          if (a.subPoints > b.subPoints) {
-            return -1;
-          } else if (a.subPoints < b.subPoints) {
-            return 1;
-          } else {
-            return 0;
-          }
+          return 0;
         }
-      })
-      .map((item, index) => ({
+      }
+    });
+
+    let position = 1;
+    return sortedClassification.map((item, index) => {
+      const prevClassificationItem = index > 0 ? sortedClassification[index - 1] : undefined;
+
+      if (
+        prevClassificationItem &&
+        (prevClassificationItem.points !== item.points ||
+          prevClassificationItem.subPoints !== item.subPoints)
+      ) {
+        position = index + 1;
+      }
+
+      return {
         ...item,
-        // TODO: pozycja musi być odpowiednio wyliczana, nie na podstawie indexu...
-        position: index + 1
-      }));
+        position
+      };
+    });
   }
 }

@@ -1,7 +1,5 @@
 import { Router } from 'express';
 
-// TODO: przejrzeć ten ROUTE bo dużo nieużytych funkcji + serwis
-
 const router = Router();
 
 router.post('/auth', async (req, res) => {
