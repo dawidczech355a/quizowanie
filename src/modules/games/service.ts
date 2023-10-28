@@ -4,10 +4,7 @@ import { UserInterface } from '../users/schema';
 import { endOfDay, endOfMonth, startOfDay, startOfMonth } from 'date-fns';
 
 export class GameService {
-  constructor(
-    private readonly gameModel: Model<GameInterface>,
-    private readonly userModel: Model<UserInterface>
-  ) {}
+  constructor(private readonly gameModel: Model<GameInterface>) {}
 
   private getTodaysTimeRange() {
     return {
@@ -20,42 +17,14 @@ export class GameService {
   }
 
   async getTodaysGames() {
-    const [games, players] = await Promise.all([
-      this.gameModel
-        .find({
-          date: {
-            $gte: this.getTodaysTimeRange().start,
-            $lte: this.getTodaysTimeRange().end
-          }
-        })
-        .exec(),
-      this.userModel.find().exec()
-    ]);
-
-    const getPlayerById = (id: string) => {
-      return players.find((player) => player._id.toString() === id);
-    };
-
-    return games.map((game) => {
-      const playerOne = getPlayerById(game.playerOneId);
-      const playerTwo = getPlayerById(game.playerTwoId);
-
-      return {
-        id: game.id,
-        players: [
-          {
-            id: playerOne._id,
-            name: playerOne.login,
-            isFinished: game.playerOneAnswers.length > 0
-          },
-          {
-            id: playerTwo._id,
-            name: playerTwo.login,
-            isFinished: game.playerTwoAnswers.length > 0
-          }
-        ]
-      };
-    });
+    return await this.gameModel
+      .find({
+        date: {
+          $gte: this.getTodaysTimeRange().start,
+          $lte: this.getTodaysTimeRange().end
+        }
+      })
+      .exec();
   }
 
   async getTodaysGameByPlayerId(playerId: string) {

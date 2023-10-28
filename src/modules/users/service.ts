@@ -90,11 +90,16 @@ export class UserService {
 
   //
 
-  async getClassification() {
-    const [players, games, questions] = await Promise.all([
-      this.userModel.find(),
-      this.gameModel.find(),
-      this.questionModel.find()
+  // TODO: zmienić te nazwe
+  async getGamesClassification(data?: {
+    games?: GameInterface[];
+    players?: Omit<UserInterface, 'password'>[];
+    questions?: QuestionInterface[];
+  }) {
+    const [players, questions, games] = await Promise.all([
+      data?.players ?? this.userModel.find(),
+      data?.questions ?? this.questionModel.find(),
+      data?.games ?? this.gameModel.find()
     ]);
 
     const getPlayerAndOponent = (playerId: string, game: GameInterface) => {
@@ -124,7 +129,7 @@ export class UserService {
       }
     };
 
-    const countedClassification = players.map((player) => {
+    return players.map((player) => {
       const playerGames = games.filter(
         (game) =>
           getPlayerAndOponent(player._id.toString(), game)?.playerId === player._id.toString()
@@ -327,6 +332,10 @@ export class UserService {
         subPoints: smallPoints
       };
     });
+  }
+
+  async getClassification() {
+    const countedClassification = await this.getGamesClassification();
 
     const sortedClassification = countedClassification.sort((a, b) => {
       if (a.points > b.points) {

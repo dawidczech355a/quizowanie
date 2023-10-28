@@ -13,6 +13,6 @@ export class DataSource {
   private readonly questionModel = mongoose.model('Question', questionsSchema);
 
   public user = new UserService(this.userModel, this.gameModel, this.questionModel);
-  public games = new GameService(this.gameModel, this.userModel);
+  public games = new GameService(this.gameModel);
   public question = new QuestionsService(this.questionModel);
 }

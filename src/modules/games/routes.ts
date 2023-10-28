@@ -6,12 +6,60 @@ const router = Router();
 // GRAMY DO 20:00
 
 router.get('/today', isAuthenticated, async (req, res) => {
-  const games = await req.dataSource.games.getTodaysGames();
+  const [games, players] = await Promise.all([
+    req.dataSource.games.getTodaysGames(),
+    req.dataSource.user.find()
+  ]);
+  const resultsForToday = await req.dataSource.user.getGamesClassification({ games, players });
 
-  res.json(games);
+  const getPlayerById = (id: string) => {
+    return players.find((player) => player._id.toString() === id);
+  };
+
+  const result = games.map((game) => {
+    const playerOne = getPlayerById(game.playerOneId);
+    const playerTwo = getPlayerById(game.playerTwoId);
+
+    const playerOneFinished = game.playerOneFetched;
+    const playerTwoFinished = game.playerTwoFetched;
+    const gameFinished = playerOneFinished && playerTwoFinished;
+
+    return {
+      id: game.id,
+      players: [
+        {
+          id: playerOne._id,
+          name: playerOne.login,
+          isFinished: playerOneFinished,
+          subPoints: gameFinished
+            ? resultsForToday.find((x) => x.id.toString() === playerOne._id.toString()).subPoints
+            : undefined
+        },
+        {
+          id: playerTwo._id,
+          name: playerTwo.login,
+          isFinished: playerTwoFinished,
+          subPoints: gameFinished
+            ? resultsForToday.find((x) => x.id.toString() === playerTwo._id.toString()).subPoints
+            : undefined
+        }
+      ]
+    };
+  });
+
+  res.json(result);
 });
 
 router.get('/current', isAuthenticated, async (req, res) => {
+  // TO BĘDZIE CZAS SERWERA - POPRAWIĆ NA UTC
+  if (new Date().getHours() >= 20) {
+    res.statusCode = 403;
+    res.json({
+      message: 'Już za późno. Gramy do 20:00...'
+    });
+    return;
+  }
+
   const game = await req.dataSource.games.getTodaysGameByPlayerId(req.userId);
 
   if (
@@ -20,7 +68,7 @@ router.get('/current', isAuthenticated, async (req, res) => {
   ) {
     res.statusCode = 403;
     res.json({
-      message: 'Już wcześniej pobrałeś pytania dla tej rozgrywki. Ponowna gra nie jest możliwa.'
+      message: 'Już wcześniej pobrano pytania dla tej rozgrywki. Ponowna gra nie jest możliwa.'
     });
     return;
   }
