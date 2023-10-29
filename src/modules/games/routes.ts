@@ -1,9 +1,8 @@
 import { Router } from 'express';
+import { utcToZonedTime } from 'date-fns-tz';
 import { isAuthenticated } from '../../utils';
 
 const router = Router();
-
-// GRAMY DO 20:00
 
 router.get('/today', isAuthenticated, async (req, res) => {
   const [games, players] = await Promise.all([
@@ -51,8 +50,10 @@ router.get('/today', isAuthenticated, async (req, res) => {
 });
 
 router.get('/current', isAuthenticated, async (req, res) => {
-  // TO BĘDZIE CZAS SERWERA - POPRAWIĆ NA UTC
-  if (new Date().getHours() >= 20) {
+  const timeZone = 'Europe/Warsaw';
+  const datePoland = utcToZonedTime(new Date(), timeZone).getHours();
+  
+  if (datePoland >= 20) {
     res.statusCode = 403;
     res.json({
       message: 'Już za późno. Gramy do 20:00...'
@@ -61,6 +62,14 @@ router.get('/current', isAuthenticated, async (req, res) => {
   }
 
   const game = await req.dataSource.games.getTodaysGameByPlayerId(req.userId);
+
+  if (!game) {
+    res.statusCode = 404;
+    res.json({
+      message: 'Nie znaleziono gierki!',
+    });
+    return;
+  }
 
   if (
     (game.playerOneId === req.userId && game.playerOneFetched) ||

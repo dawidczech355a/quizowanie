@@ -32,8 +32,7 @@ export class QuestionsService {
 
     const result = this.shuffleQuestions(questions);
 
-    // TODO: tutaj nie 3, a 5!!! - poki co 3 bo mi szybciej
-    return result.slice(0, 3).map((question) => ({
+    return result.slice(0, 5).map((question) => ({
       id: question._id,
       question: question.question,
       answers: question.answers

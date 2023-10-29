@@ -1,18 +1,15 @@
 import { Model } from 'mongoose';
+import { endOfDay, startOfDay } from 'date-fns';
+
 import { Answer, GameInterface } from './schema';
-import { UserInterface } from '../users/schema';
-import { endOfDay, endOfMonth, startOfDay, startOfMonth } from 'date-fns';
 
 export class GameService {
   constructor(private readonly gameModel: Model<GameInterface>) {}
 
   private getTodaysTimeRange() {
     return {
-      // TODO: wyłącznie na czas developmentu - usunąć później
-      // start: startOfDay(new Date()).getTime(),
-      // end: endOfDay(new Date()).getTime()
-      start: startOfMonth(new Date()).getTime(),
-      end: endOfMonth(new Date()).getTime()
+      start: startOfDay(new Date()).getTime(),
+      end: endOfDay(new Date()).getTime()
     };
   }
 
@@ -28,7 +25,7 @@ export class GameService {
   }
 
   async getTodaysGameByPlayerId(playerId: string) {
-    const result = await this.gameModel
+    return await this.gameModel
       .findOne({
         $and: [
           {
@@ -48,10 +45,7 @@ export class GameService {
             ]
           }
         ]
-      })
-      .exec();
-
-    return result;
+      });
   }
 
   async updateTodaysGameByPlayerId(playerId: string, answer: Answer) {

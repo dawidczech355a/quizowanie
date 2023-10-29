@@ -152,11 +152,15 @@ export class UserService {
               (question) => question._id.toString() === curr2.questionId
             );
 
-            if (question && question.correct === curr2.value) {
-              return prev2 + 1;
+            if (curr2.value.length === 0) {
+              return prev2;
             }
 
-            return prev2;
+            if (question && question.correct === curr2.value) {
+              return prev2 + 20;
+            }
+
+            return prev2 - 10;
           },
           0
         );
@@ -171,11 +175,15 @@ export class UserService {
               (question) => question._id.toString() === curr2.questionId
             );
 
-            if (question && question.correct === curr2.value) {
-              return prev2 + 1;
+            if (curr2.value.length === 0) {
+              return prev2;
             }
 
-            return prev2;
+            if (question && question.correct === curr2.value) {
+              return prev2 + 20;
+            }
+
+            return prev2 - 10;
           },
           0
         );
@@ -188,11 +196,15 @@ export class UserService {
             (question) => question._id.toString() === curr2.questionId
           );
 
-          if (question && question.correct === curr2.value) {
-            return prev2 + 1;
+          if (curr2.value.length === 0) {
+            return prev2;
           }
 
-          return prev2;
+          if (question && question.correct === curr2.value) {
+            return prev2 + 20;
+          }
+
+          return prev2 - 10;
         }, 0);
 
         if (playerPoints > oponentPoints) {
@@ -213,11 +225,15 @@ export class UserService {
               (question) => question._id.toString() === curr2.questionId
             );
 
-            if (question && question.correct === curr2.value) {
-              return prev2 + 1;
+            if (curr2.value.length === 0) {
+              return prev2;
             }
 
-            return prev2;
+            if (question && question.correct === curr2.value) {
+              return prev2 + 20;
+            }
+
+            return prev2 - 10;
           },
           0
         );
@@ -230,11 +246,15 @@ export class UserService {
             (question) => question._id.toString() === curr2.questionId
           );
 
-          if (question && question.correct === curr2.value) {
-            return prev2 + 1;
+          if (curr2.value.length === 0) {
+            return prev2;
           }
 
-          return prev2;
+          if (question && question.correct === curr2.value) {
+            return prev2 + 20;
+          }
+
+          return prev2 - 10;
         }, 0);
 
         if (playerPoints > oponentPoints) {
@@ -251,11 +271,15 @@ export class UserService {
               (question) => question._id.toString() === curr2.questionId
             );
 
-            if (question && question.correct === curr2.value) {
-              return prev2 + 1;
+            if (curr2.value.length === 0) {
+              return prev2;
             }
 
-            return prev2;
+            if (question && question.correct === curr2.value) {
+              return prev2 + 20;
+            }
+
+            return prev2 - 10;
           },
           0
         );
@@ -268,11 +292,15 @@ export class UserService {
             (question) => question._id.toString() === curr2.questionId
           );
 
-          if (question && question.correct === curr2.value) {
-            return prev2 + 1;
+          if (curr2.value.length === 0) {
+            return prev2;
           }
 
-          return prev2;
+          if (question && question.correct === curr2.value) {
+            return prev2 + 20;
+          }
+
+          return prev2 - 10;
         }, 0);
 
         if (playerPoints === oponentPoints) {
@@ -289,11 +317,15 @@ export class UserService {
               (question) => question._id.toString() === curr2.questionId
             );
 
-            if (question && question.correct === curr2.value) {
-              return prev2 + 1;
+            if (curr2.value.length === 0) {
+              return prev2;
             }
 
-            return prev2;
+            if (question && question.correct === curr2.value) {
+              return prev2 + 20;
+            }
+
+            return prev2 - 10;
           },
           0
         );
@@ -306,11 +338,15 @@ export class UserService {
             (question) => question._id.toString() === curr2.questionId
           );
 
-          if (question && question.correct === curr2.value) {
-            return prev2 + 1;
+          if (curr2.value.length === 0) {
+            return prev2;
           }
 
-          return prev2;
+          if (question && question.correct === curr2.value) {
+            return prev2 + 20;
+          }
+
+          return prev2 - 10;
         }, 0);
 
         if (playerPoints < oponentPoints) {

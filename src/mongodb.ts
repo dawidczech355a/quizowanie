@@ -1,7 +1,10 @@
 import { ServerApiVersion } from 'mongodb';
 import mongoose from 'mongoose';
 
-const uri = "mongodb+srv://dawidczech355a:Test123@quizowanie.2yalqi4.mongodb.net/quizowanie?retryWrites=true&w=majority";
+// PROD
+// const uri = "mongodb+srv://dawidczech355a:Test123@quizowanie.2yalqi4.mongodb.net/quizowanie?retryWrites=true&w=majority";
+// DEV
+const uri = "mongodb+srv://dawidczech355a:Test123@cluster0.zhhnqpg.mongodb.net/quizowanie-dev?retryWrites=true&w=majority";
 
 export async function mongoConnection() {
   await mongoose.connect(uri, {
