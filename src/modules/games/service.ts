@@ -1,5 +1,6 @@
 import { Model } from 'mongoose';
 import { endOfDay, startOfDay } from 'date-fns';
+import { utcToZonedTime } from 'date-fns-tz';
 
 import { Answer, GameInterface } from './schema';
 
@@ -7,9 +8,11 @@ export class GameService {
   constructor(private readonly gameModel: Model<GameInterface>) {}
 
   private getTodaysTimeRange() {
+    const dateInPoland = utcToZonedTime(new Date(), 'Europe/Warsaw');
+    
     return {
-      start: startOfDay(new Date()).getTime(),
-      end: endOfDay(new Date()).getTime()
+      start: startOfDay(dateInPoland).getTime(),
+      end: endOfDay(dateInPoland).getTime()
     };
   }
 

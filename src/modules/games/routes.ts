@@ -50,10 +50,9 @@ router.get('/today', isAuthenticated, async (req, res) => {
 });
 
 router.get('/current', isAuthenticated, async (req, res) => {
-  const timeZone = 'Europe/Warsaw';
-  const datePoland = utcToZonedTime(new Date(), timeZone).getHours();
+  const hourInPoland = utcToZonedTime(new Date(), 'Europe/Warsaw').getHours();
   
-  if (datePoland >= 20) {
+  if (hourInPoland >= 20) {
     res.statusCode = 403;
     res.json({
       message: 'Już za późno. Gramy do 20:00...'

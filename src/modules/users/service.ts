@@ -1,6 +1,7 @@
 import { Model } from 'mongoose';
 import jwt from 'jsonwebtoken';
-import { startOfDay } from 'date-fns';
+import { endOfDay, startOfDay } from 'date-fns';
+import { utcToZonedTime } from 'date-fns-tz';
 
 import { UserInterface } from '../users/schema';
 import { Answer, GameInterface } from '../games/schema';
@@ -136,13 +137,20 @@ export class UserService {
       );
 
       const finishedGames = playerGames.filter((game) => {
-        const startOfDayTime = startOfDay(new Date()).getTime();
+        const dateInPoland = utcToZonedTime(new Date(), 'Europe/Warsaw');
+        const endOfDayTime = endOfDay(dateInPoland).getTime();
+        const startOfDayTime = startOfDay(dateInPoland).getTime();
         const playerAndOponent = getPlayerAndOponent(player._id.toString(), game);
 
-        return (
-          startOfDayTime > game.date ||
-          (playerAndOponent.playerAnswers.length > 0 && playerAndOponent.oponentAnswers.length > 0)
-        );
+        if (playerAndOponent.playerAnswers.length > 0 && playerAndOponent.oponentAnswers.length > 0) {
+          return true;
+        }
+
+        if (dateInPoland.getTime() >= 20) {
+          return endOfDayTime > game.date;
+        }
+
+        return startOfDayTime > game.date;
       });
 
       const smallPoints = finishedGames.reduce((prev, curr) => {
